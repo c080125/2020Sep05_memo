@@ -1,0 +1,152 @@
+<!-- To DO -->
+<!-- 
+    Profileの見た目を整える
+    localStorageにセットする情報を確認する
+    Profile記載の情報はlocalStorageに記録して置くようにする
+    特定のtweatだけ削除できるようにする（emptyの領域を指定） 
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>myMemoPad</title>
+<script src="js/jquery-2.1.3.min.js"></script>
+<link rel="stylesheet" href="css/sample.css">
+</head>
+<body>
+<header>
+<h1>MemoPad</h1>
+</header>
+<main>
+    <!-- ユーザー情報の登録 -->
+    <!-- <div id="profile">
+        <p>
+            名前：<input id="pfname" type="text" name="name" size="40">
+        </p>
+        <p>
+            性別：<input id="" type="radio" name="sex" value="male">男
+            <input type="radio" name="sex" value="female">女
+        </p>
+        <p>生年月日：
+            <select id="year"></select>
+            <select id="month"></select>
+            <select id="date"></select>
+        </p>
+        <button id="btn">保存</button>
+    </div> -->
+<!-- メモ： -->
+    <input type="text" id="key">
+    <textarea id="memo"></textarea>
+    <ul>
+        <li id="save">Save</li>
+        <li id="reload">Relaod</li>
+        <li id="clear">Clear</li>
+    </ul>
+    <table id="list">
+        <tr><td></td><td></td><td></td></tr><!-- ここに追加データが挿入される -->
+    </table>
+</main>
+
+<script>
+// プロフィール欄に入る生年を表示
+let now = new Date();
+let year = now.getFullYear();
+let y = "";
+for (let i = year-100; i<year+1; i++){
+    y +=  '<option value="'+i+'">'+i+'</option>';
+};
+console.log (y);
+$("#year").html(y);
+
+// プロフィール欄に入る月を表示
+let m = "";
+for (let i = 1; i<13; i++){
+    m +=  '<option value="'+i+'">'+i+'</option>';
+};
+console.log(m);
+$("#month").html(m);
+
+// プロフィール欄に入る日を表示
+let d = "";
+for (let i = 1; i<32; i++){
+    d +=  '<option value="'+i+'">'+i+'</option>';
+};
+console.log(d);
+$("#date").html(d);
+// 2月とか小の月は表示させる日にちの上限値を変更したい
+
+$("btn").on("click", function(){
+    const username = $("#pfname").val();
+    // const usersex = $("#pfsex").val();
+});
+
+//1.Save クリックイベント
+$("#save").on("click", function(){
+    let now = new Date();
+    const key1 = $("#key").val();
+    const key2 = $("#key").val()+"a";
+    const memo = $("#memo").val();
+    
+    let year = now.getFullYear();
+    let month = now.getMonth()+1;
+    let date = now.getDate();
+    let hour = now.getHours();
+    let min = now.getMinutes();
+    let sec = now.getSeconds();
+    const time = year+"/"+month+"/"+date+"   "+hour+":"+min+":"+sec;
+    //console.log(time);
+    
+    if (key1 == "" || key2 ==""){
+        alert("入力してください");
+    }else{
+        localStorage.setItem (key1,memo);
+        localStorage.setItem (key2,time);
+        const memo_display = localStorage.getItem (key1);
+        const time_display = localStorage.getItem (key2);
+        const html = '<tr><td>'+time_display+'</td><td>'+key1+'</td><td>'+memo_display+'</td></tr>';
+        $("#list").prepend(html);
+        $("#key").val("");
+        $("#memo").val("");
+    }
+    // alert("OK");
+});
+// Reloadを押下したときの反応
+$("reload").on("click", function(){
+    for (let i=1; i<localStorage.length; i=i+2){
+        const key1 = localStorage.getItem(i);
+        const key2 = localStorage.getItem(i+1);
+        const memo = $("#memo").val();
+        const memo_display = localStorage.getItem (key1);
+        const time_display = localStorage.getItem (key2);
+        const html = '<tr><td>'+time_display+'</td><td>'+key1+'</td><td>'+memo_display+'</td></tr>';
+        $("#list").append(html);
+        $("#key").val("");
+        $("#memo").val("");
+    };
+});
+
+//2.clear クリックイベント
+$("#clear").on("click", function(){
+    localStorage.clear();
+    $("#list").empty(); //remove()だとテーブルごと削除しちゃう
+    alert("OK");
+});
+
+//3.ページ読み込み：保存データ取得表示
+for(let i=0; i<localStorage.length; i=i+2){
+    const key1 = localStorage.key(i); //constだけど、ループ内でグローバル変数ではないので、constでOK
+    const key2 = localStorage.key(i+1);
+    const memo_display = localStorage.getItem(key1);
+    const time_display = localStorage.getItem(key2);
+    const html = '<tr><td>'+time_display+'</td><td>'+key1+'</td><td>'+memo_display+'</td></tr>';
+    $("#list").prepend(html);  //saveイベントからコピペ
+}
+
+
+
+
+</script>
+<footer><small>G's</small></footer>
+</body>
+</html>
